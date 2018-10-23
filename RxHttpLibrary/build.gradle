@@ -1,0 +1,78 @@
+apply plugin: 'com.android.library'
+apply plugin: "guru.stefma.bintrayrelease"
+
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'guru.stefma.bintrayrelease:bintrayrelease:1.0.0'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/releases/' }
+
+    }
+}
+
+
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    defaultConfig {
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 15
+        versionName "1.2.4"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // retrofit
+    api rootProject.ext.networkLibs
+    // RxJava2
+    api rootProject.ext.rxJavaLibs
+    // okhttp
+    api rootProject.ext.okhttpLibs
+    // guava
+    api "${rootProject.ext.supportDeps.guavaVersion}"
+    api('com.github.ihsanbal:LoggingInterceptor:2.0.5') {
+        exclude group: 'org.json', module: 'json'
+    }
+}
+
+publish {
+    userOrg = 'carozhu'
+    group = 'com.carozhu'
+    artifactId = 'RxHttpLibrary'
+    version = '1.2.4'
+    desc = 'rxjava2 + retrofit2 Http client'
+    website = 'https://github.com/carozhu/RxHttpLibrary.git'
+
+}
