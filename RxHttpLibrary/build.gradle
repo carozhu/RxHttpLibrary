@@ -31,8 +31,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode 15
-        versionName "1.2.4"
+        versionCode 17
+        versionName "1.2.6"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -65,13 +65,14 @@ dependencies {
     api('com.github.ihsanbal:LoggingInterceptor:2.0.5') {
         exclude group: 'org.json', module: 'json'
     }
+
 }
 
 publish {
     userOrg = 'carozhu'
     group = 'com.carozhu'
     artifactId = 'RxHttpLibrary'
-    version = '1.2.4'
+    version = '1.2.6'
     desc = 'rxjava2 + retrofit2 Http client'
     website = 'https://github.com/carozhu/RxHttpLibrary.git'
 
