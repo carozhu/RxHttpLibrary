@@ -1,0 +1,89 @@
+//模板
+def file = project.rootProject.file('local.properties')
+if (!file.exists()) return
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+def siteUrl = properties.getProperty("siteUrl")
+def gitUrl = properties.getProperty("gitUrl")
+
+
+group = properties.getProperty("bintray.group")
+version = properties.getProperty("bintray.version")
+
+bintray {
+
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives'] //When uploading configuration files
+    pkg {
+        repo = 'maven'
+        name = properties.getProperty("name")
+        desc = properties.getProperty("desc")
+        websiteUrl = siteUrl
+        issueTrackerUrl = properties.getProperty("issueTrackerUrl")
+        vcsUrl = gitUrl
+        licenses = ['MIT']
+        labels = ['android']
+        publicDownloadNumbers = true
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                name properties.getProperty("name")
+                url siteUrl
+                licenses {
+                    license {
+                        name 'The MIT License (MIT)'
+                        url 'http://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id properties.getProperty("developer.id")
+                        name properties.getProperty("developer.name")
+                        email properties.getProperty("developer.email")
+                    }
+                }
+                scm {
+                    connection properties.getProperty("scm.connection")
+                    developerConnection properties.getProperty("scm.developerConnection")
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+task findConventions << {
+    println project.getConvention()
+}

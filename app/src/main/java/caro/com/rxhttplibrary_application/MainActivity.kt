@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu
 import android.view.MenuItem
+import com.carozhu.rxhttp.retrofitOkhttp.RetrofitOkhttpClient
+import com.carozhu.rxhttp.rx.RxBus
 
 
 import kotlinx.android.synthetic.main.activity_main.*

@@ -1,38 +1,18 @@
 apply plugin: 'com.android.library'
-apply plugin: "guru.stefma.bintrayrelease"
-
-
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'guru.stefma.bintrayrelease:bintrayrelease:1.0.0'
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-        maven { url 'http://maven.aliyun.com/nexus/content/repositories/releases/' }
-
-    }
-}
-
-
+apply plugin: 'com.novoda.bintray-release' // must be applied after your artifact generating plugin (eg. java / com.android.library)
 
 android {
+
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
+    }
+
     compileSdkVersion rootProject.ext.android.compileSdkVersion
     defaultConfig {
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode 17
-        versionName "1.2.6"
+        versionCode 30
+        versionName "1.2.7.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -47,33 +27,84 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+
 }
 
+//aar引用不到第三方的依赖的解决办法 https://blog.csdn.net/u013648164/article/details/78953794
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     // retrofit
-    api rootProject.ext.networkLibs
-    // RxJava2
-    api rootProject.ext.rxJavaLibs
+    api ("com.squareup.retrofit2:retrofit:$rootProject.ext.dependVersion.retrofitSdkVersion")
+    api ("com.squareup.retrofit2:converter-gson:$rootProject.ext.dependVersion.retrofitSdkVersion")
+    api ("com.squareup.retrofit2:adapter-rxjava2:$rootProject.ext.dependVersion.retrofitSdkVersion")
+    api ("com.squareup.retrofit2:converter-jackson:$rootProject.ext.dependVersion.JacksonConverter")
+    api ("com.squareup.retrofit2:converter-scalars:$rootProject.ext.dependVersion.retrofitSdkVersion")
+
+    // rxjava2
+    api ("io.reactivex.rxjava2:rxjava:$rootProject.ext.dependVersion.rxJava")
+    api ("io.reactivex.rxjava2:rxandroid:$rootProject.ext.dependVersion.rxAndroid")
+    api ("com.jakewharton.rxrelay2:rxrelay:$rootProject.ext.dependVersion.rxrelay")
+    api ('me.jessyan:rxerrorhandler:2.1.1')
+
     // okhttp
-    api rootProject.ext.okhttpLibs
+    //api (rootProject.ext.okhttpLibs){transitive=true}
+    api ("com.squareup.okhttp3:okhttp:$rootProject.ext.dependVersion.okHttp3")
+    api ("com.squareup.okhttp3:logging-interceptor:$rootProject.ext.dependVersion.okHttp3")
+
     // guava
-    api "${rootProject.ext.supportDeps.guavaVersion}"
-    api('com.github.ihsanbal:LoggingInterceptor:2.0.5') {
+    api ("${rootProject.ext.supportDeps.guavaVersion}")
+
+    api('com.github.ihsanbal:LoggingInterceptor:3.0.0') {
         exclude group: 'org.json', module: 'json'
     }
-
 }
+
+
+
+
+//生成源文件
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+//生成Javadoc文档
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+//文档打包成jar
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+//拷贝javadoc文件
+task copyDoc(type: Copy) {
+    from "${buildDir}/docs/"
+    into "docs"
+}
+//上传到JCenter所需要的源码文件
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+//解决 JavaDoc 中文注释生成失败的问题
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+
+
+//https://github.com/novoda/bintray-release 解决了Library中依赖第三方库aar时引用不到的问题
 
 publish {
     userOrg = 'carozhu'
-    group = 'com.carozhu'
+    groupId = 'com.carozhu'
     artifactId = 'RxHttpLibrary'
-    version = '1.2.6'
-    desc = 'rxjava2 + retrofit2 Http client'
-    website = 'https://github.com/carozhu/RxHttpLibrary.git'
-
+    publishVersion = '1.2.6.9'
+    desc = 'Oh hi, this is a nice description for a project, right?'
+    website = 'https://github.com/carozhu/RxHttpLibrary'
 }
