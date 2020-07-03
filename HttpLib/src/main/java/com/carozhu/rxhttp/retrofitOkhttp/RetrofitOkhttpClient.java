@@ -2,16 +2,12 @@ package com.carozhu.rxhttp.retrofitOkhttp;
 
 import android.app.Application;
 
-
 import com.carozhu.rxhttp.cookie.CookieManger;
 import com.carozhu.rxhttp.https.HttpsUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ihsanbal.logging.Level;
 import com.ihsanbal.logging.LoggingInterceptor;
-
-
-import org.apache.http.params.HttpParams;
 
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
@@ -21,10 +17,10 @@ import javax.net.ssl.SSLSession;
 
 import io.reactivex.disposables.Disposable;
 import okhttp3.Dns;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.internal.http.HttpHeaders;
 import okhttp3.internal.platform.Platform;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -63,6 +59,7 @@ public class RetrofitOkhttpClient {
     final private Gson gson = new GsonBuilder()
             .setLenient()
             .create();
+
     public RetrofitOkhttpClient() {
         okHttpClientBuilder = new OkHttpClient.Builder();
         okHttpClientBuilder.hostnameVerifier(new DefaultHostnameVerifier());
@@ -167,31 +164,31 @@ public class RetrofitOkhttpClient {
 
     /**
      * 添加日志拦截器
-     * 是否开启请求日志
      *
+     * @param loggable    是否开启请求日志
+     * @param requestTag  Request
+     * @param responseTag Response
      * @return
      */
-    public RetrofitOkhttpClient addLogInterceptor(boolean loggable, String VERSION_NAME) {
-        if (loggable) {
-            okHttpClientBuilder.addInterceptor(new LoggingInterceptor.Builder()
-                    .loggable(loggable)
-                    .setLevel(Level.BASIC)
-                    .log(Platform.INFO)
-                    .request("Request")
-                    .response("Response")
-                    //.addHeader("version", VERSION_NAME)
-                    //.addQueryParam("query", "0")
-                    /*
-                    .logger(new Logger() {
-                        @Override
-                        public void log(int level, String tag, String msg) {
-                            Log.w(tag, msg);
-                        }
-                    })
-                    .executor(Executors.newSingleThreadExecutor())
-                    */
-                    .build());
-        }
+    public RetrofitOkhttpClient addLoggingInterceptor(boolean loggable, String requestTag, String responseTag) {
+        okHttpClientBuilder.addInterceptor(new LoggingInterceptor.Builder()
+                .setLevel(Level.BASIC)
+                .log(Platform.INFO)
+                .request(requestTag)
+                .response(responseTag)
+                //.addHeader("version", VERSION_NAME)
+                //.addQueryParam("query", "0")
+                /*
+                .logger(new Logger() {
+                    @Override
+                    public void log(int level, String tag, String msg) {
+                        Log.w(tag, msg);
+                    }
+                })
+                .executor(Executors.newSingleThreadExecutor())
+                */
+                .build());
+
         return this;
     }
 
@@ -335,6 +332,27 @@ public class RetrofitOkhttpClient {
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
+    }
+
+    /**
+     * 获取okHttpClient
+     *
+     * @return
+     */
+    public OkHttpClient getOkHttpClient() {
+        OkHttpClient okHttpClient = okHttpClientBuilder.build();
+        return okHttpClient;
+    }
+
+    /**
+     * 添加你的自定义拦截器灵活处理
+     *
+     * @param interceptor
+     * @return
+     */
+    public RetrofitOkhttpClient addInterceptor(Interceptor interceptor) {
+        okHttpClientBuilder.addInterceptor(interceptor);
+        return this;
     }
 
 }

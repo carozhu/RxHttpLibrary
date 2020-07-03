@@ -1,0 +1,100 @@
+apply plugin: 'com.android.library'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        //0.9对应gradle-4.10.1版本
+        classpath 'com.novoda:bintray-release:0.9'
+    }
+}
+
+android {
+
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
+    }
+
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    defaultConfig {
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 41
+        versionName "1.2.8.1"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
+    lintOptions {
+        abortOnError false // 即使有报错也不会停止打包
+        checkReleaseBuilds false // 打包Release版本的时候也不进行Lint检测
+    }
+
+}
+
+//aar引用不到第三方的依赖的解决办法 https://blog.csdn.net/u013648164/article/details/78953794
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+
+
+    // retrofit
+    api("com.squareup.retrofit2:retrofit:$rootProject.ext.dependVersion.retrofitSdkVersion")
+    api("com.squareup.retrofit2:converter-gson:$rootProject.ext.dependVersion.retrofitSdkVersion")
+    api("com.squareup.retrofit2:adapter-rxjava2:$rootProject.ext.dependVersion.retrofitSdkVersion")
+    api("com.squareup.retrofit2:converter-jackson:$rootProject.ext.dependVersion.JacksonConverter")
+
+    //https://github.com/square/retrofit
+    //api 'com.squareup.retrofit2:retrofit:2.9.0'
+    //https://github.com/square/retrofit/tree/master/retrofit-converters
+    //api 'com.squareup.retrofit2:converter-gson:2.9.0'
+    //api 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+    //api 'com.squareup.retrofit2:converter-jackson:2.9.0'
+
+    //converter-scalars 支持返回的网络请求数据是非json的字符串
+    api("com.squareup.retrofit2:converter-scalars:$rootProject.ext.dependVersion.retrofitSdkVersion")
+
+    // rxjava2
+    api("io.reactivex.rxjava2:rxjava:$rootProject.ext.dependVersion.rxJava")
+    api("io.reactivex.rxjava2:rxandroid:$rootProject.ext.dependVersion.rxAndroid")
+    api("com.jakewharton.rxrelay2:rxrelay:$rootProject.ext.dependVersion.rxrelay")
+    api('me.jessyan:rxerrorhandler:2.1.1')
+
+    // okhttp
+    //api (rootProject.ext.okhttpLibs){transitive=true}
+    api("com.squareup.okhttp3:okhttp:$rootProject.ext.dependVersion.okHttp3")
+    api("com.squareup.okhttp3:logging-interceptor:$rootProject.ext.dependVersion.okHttp3")
+    api group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: okhttpVersion
+
+    // guava
+    api("${rootProject.ext.supportDeps.guavaVersion}")
+
+    api project(':LoggingInterceptorLibrary')
+//    {
+//        exclude group: 'org.json', module: 'json'
+//    }
+
+//    api('com.github.ihsanbal:LoggingInterceptor:3.1.0') {
+//        exclude group: 'org.json', module: 'json'
+//    }
+}
+
+
+//apply from:'./novodaUpload.gradle'
+apply from:'../androidMaven_upload.gradle'
