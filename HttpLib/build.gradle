@@ -1,14 +1,5 @@
 apply plugin: 'com.android.library'
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        //0.9对应gradle-4.10.1版本
-        classpath 'com.novoda:bintray-release:0.9'
-    }
-}
 
 android {
 
@@ -17,16 +8,24 @@ android {
     }
 
     compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+
     defaultConfig {
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode 41
-        versionName "1.2.8.1"
+        versionCode 66
+        versionName "2.0.1.1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
     buildTypes {
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -46,12 +45,13 @@ android {
 
 //aar引用不到第三方的依赖的解决办法 https://blog.csdn.net/u013648164/article/details/78953794
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    //当引用Lib时  ['*.jar','*.aar']，同时也是为了第三方.aar
+    implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 
     // retrofit
@@ -85,16 +85,11 @@ dependencies {
     // guava
     api("${rootProject.ext.supportDeps.guavaVersion}")
 
-    api project(':LoggingInterceptorLibrary')
-//    {
-//        exclude group: 'org.json', module: 'json'
-//    }
-
-//    api('com.github.ihsanbal:LoggingInterceptor:3.1.0') {
-//        exclude group: 'org.json', module: 'json'
-//    }
+    api('com.github.ihsanbal:LoggingInterceptor:3.1.0') {
+        exclude group: 'org.json', module: 'json'
+    }
 }
 
 
-//apply from:'./novodaUpload.gradle'
-apply from:'../androidMaven_upload.gradle'
+apply from:'./novodaUpload.gradle'
+//apply from:'../androidMaven_upload.gradle'

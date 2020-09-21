@@ -19,7 +19,7 @@ package com.carozhu.rxhttp.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
-public class HttpLog {
+public class  HttpLog {
     public static String customTagPrefix = "HttpLog";
 
     private HttpLog() {

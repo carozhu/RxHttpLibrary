@@ -2,8 +2,9 @@ ext {
 
     android = [
             minSdkVersion        : 15,
-            compileSdkVersion    : 28,
-            targetSdkVersion     : 28
+            compileSdkVersion    : 29,
+            targetSdkVersion     : 29,
+            buildToolsVersion    : "29.0.3"
     ]
 
     dependClasspathVersion = [
@@ -16,13 +17,17 @@ ext {
             multidex                   : "1.0.3",
             constraintlayout           : "1.1.3",
 
-            retrofitSdkVersion      : "2.4.0",
+            //https://github.com/square/retrofit
+            retrofitSdkVersion      : "2.9.0",
             rxrelay                 : "2.0.0",
-            JacksonConverter        : "2.4.0",
+            JacksonConverter        : "2.5.0",
+            converterScalars        : "2.6.0",
             glideSdkVersion         : "4.7.1",
             rxJava                  : "2.1.5",
             rxAndroid               : "2.0.1",
-            okHttp3                 : "3.10.0",
+
+            //okHttp3                 : "3.10.0",
+            okHttp3                 : "4.4.0",
 
             lifecycle               : "1.1.1",
             rxlifecycle             : "2.2.2"
@@ -49,7 +54,7 @@ ext {
             retrofitAdapterRxjava2  : "com.squareup.retrofit2:adapter-rxjava2:$dependVersion.retrofitSdkVersion",
             JacksonConverter        : "com.squareup.retrofit2:converter-jackson:$dependVersion.JacksonConverter",
             //A Converter which supports converting strings and both primitives and their boxed types to text/plain bodies.
-            converterScalars        : "com.squareup.retrofit2:converter-scalars:$dependVersion.retrofitSdkVersion"
+            converterScalars        : "com.squareup.retrofit2:converter-scalars:$dependVersion.converterScalars"
     ]
 
 

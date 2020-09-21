@@ -170,7 +170,7 @@ public class RetrofitOkhttpClient {
      * @param responseTag Response
      * @return
      */
-    public RetrofitOkhttpClient addLoggingInterceptor(boolean loggable, String requestTag, String responseTag) {
+    public RetrofitOkhttpClient addLoggingInterceptor(String requestTag, String responseTag) {
         okHttpClientBuilder.addInterceptor(new LoggingInterceptor.Builder()
                 .setLevel(Level.BASIC)
                 .log(Platform.INFO)
@@ -188,7 +188,6 @@ public class RetrofitOkhttpClient {
                 .executor(Executors.newSingleThreadExecutor())
                 */
                 .build());
-
         return this;
     }
 

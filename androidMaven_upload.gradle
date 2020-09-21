@@ -87,3 +87,5 @@ artifacts {
 task findConventions << {
     println project.getConvention()
 }
+
+// 执行 ./gradlew clean build bintrayUpload
